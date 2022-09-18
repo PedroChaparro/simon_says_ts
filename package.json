@@ -1,0 +1,29 @@
+{
+  "name": "simon_says_ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PedroChaparro/simon_says_ts.git"
+  },
+  "keywords": [],
+  "author": "Pedro Andres Chaparro Quintero",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PedroChaparro/simon_says_ts/issues"
+  },
+  "homepage": "https://github.com/PedroChaparro/simon_says_ts#readme",
+  "dependencies": {
+    "eslint-config-prettier": "^8.5.0",
+    "typescript": "^4.8.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.37.0",
+    "@typescript-eslint/parser": "^5.37.0",
+    "eslint": "^8.23.1"
+  }
+}
