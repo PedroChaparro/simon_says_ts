@@ -146,3 +146,22 @@ body {
 	background-color: white;
 	box-shadow: 0px 4px 16px #dedede;
 }
+
+/* *** *** *** */
+/*Panel animation*/
+/* *** *** *** */
+.panel-button--animated {
+	animation-name: panel-animation;
+	animation-duration: 500ms;
+}
+
+@keyframes panel-animation {
+	0% {
+		transform: scale(1.1);
+		filter: brightness(2);
+	}
+	100% {
+		transform: scale(1);
+		filter: brightness(1);
+	}
+}

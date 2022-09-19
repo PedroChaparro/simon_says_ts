@@ -1,7 +1,7 @@
 import { controller_start, controller_updateUserPattern } from '../controller/controller.js';
 
 // Dom selectors
-const startBtn: HTMLButtonElement | null = document.querySelector('button#start-game');
+export const startBtn: HTMLButtonElement | null = document.querySelector('button#start-game');
 
 export const greenBtn: HTMLDivElement | null = document.querySelector('div#green-button');
 export const redBtn: HTMLDivElement | null = document.querySelector('div#red-button');
@@ -53,7 +53,7 @@ if (
 
 			const target = e.target;
 			if (target instanceof HTMLButtonElement) {
-				if (target.dataset.delay) controller_start(target.dataset.delay);
+				if (target.dataset.delay) controller_start(parseInt(target.dataset.delay));
 			}
 		});
 	});
