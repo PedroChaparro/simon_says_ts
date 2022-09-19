@@ -6,6 +6,7 @@ import { colors } from '../model/model.js';
 // **** **** ****
 
 let currentLvl = 0;
+let currentDelay = 1000;
 let gamePattern: Array<string> = [];
 let userPattern: Array<string> = [];
 
@@ -17,11 +18,12 @@ function getRandomColorIndex(): number {
 	return Math.floor(Math.random() * 4);
 }
 
-export function controller_start(): void {
+export function controller_start(delay: number): void {
 	// Reset values
 	currentLvl = 1;
 	userPattern = [];
 	gamePattern = [];
+	currentDelay = delay;
 
 	create_lvl(currentLvl);
 }
@@ -40,7 +42,7 @@ function create_lvl(lvl: number): void {
 			// Add to the game pattern
 			gamePattern.push(random);
 			// Recursively iterate
-			if (--lvl) animate(lvl, 1000);
+			if (--lvl) animate(lvl, currentDelay);
 		}, timeout);
 	})(lvl, 0);
 

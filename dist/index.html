@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="./app.css" />
+		<title>Simon Says</title>
+	</head>
+
+	<body>
+		<div class="container">
+			<h1 class="text-center">Simon Says</h1>
+
+			<div class="flex-container">
+				<div class="sbtn green" id="green-button" data-value="green">G</div>
+				<div class="sbtn red" id="red-button" data-value="red">R</div>
+			</div>
+			<div class="flex-container">
+				<div class="sbtn yellow" id="yellow-button" data-value="yellow">Y</div>
+				<div class="sbtn blue" id="blue-button" data-value="blue">B</div>
+			</div>
+
+			<div class="flex-container">
+				<div class="text-center">
+					<button class="btn" id="start-game">Start</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="diffuser-difficulty">
+			<div class="difficulty-modal">
+				<h2>Select game difficulty</h2>
+				<button
+					id="button-easy"
+					class="button button--block button--green"
+					data-delay="1500"
+				>
+					Easy
+				</button>
+				<button
+					id="button-normal"
+					class="button button--block button--yellow"
+					data-delay="1000"
+				>
+					Normal
+				</button>
+				<button id="button-hard" class="button button--block button--red" data-delay="500">
+					Hard
+				</button>
+			</div>
+		</div>
+
+		<script src="./js/view/view.js" type="module"></script>
+	</body>
+</html>
