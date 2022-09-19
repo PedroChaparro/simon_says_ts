@@ -118,7 +118,7 @@ body {
 /*Dificulty modal*/
 /* *** *** *** */
 .diffuser-difficulty,
-.diffuser-end {
+.diffuser-player {
 	display: none;
 	position: fixed;
 	top: 0;
@@ -132,19 +132,34 @@ body {
 }
 
 .diffuser-difficulty--active,
-.diffuser-end--active {
+.diffuser-player--active {
 	display: flex;
 	justify-content: center;
 	align-items: flex-start;
 }
 
-.difficulty-modal {
+.difficulty-modal,
+.player-modal {
 	padding: 12px;
 	border-radius: 12px;
+
+	min-width: 240px;
+	max-width: 25%;
+	text-align: center;
 
 	color: black;
 	background-color: white;
 	box-shadow: 0px 4px 16px #dedede;
+}
+
+.player-modal input {
+	display: block;
+	width: 100%;
+	margin-block: 16px;
+	font-size: 1.2rem;
+	padding: 4px 8px;
+
+	outline: none;
 }
 
 /* *** *** *** */
@@ -164,4 +179,40 @@ body {
 		transform: scale(1);
 		filter: brightness(1);
 	}
+}
+
+/* *** *** *** */
+/*Table*/
+/* *** *** *** */
+.top-container {
+	margin-block: 32px;
+	display: flex;
+	justify-content: center;
+}
+
+.top {
+	border-collapse: collapse;
+	overflow-x: auto;
+	color: black;
+	font-size: 1.2rem;
+}
+
+.top thead {
+	font-weight: bolder;
+	background-color: white;
+}
+
+.top th,
+.top td {
+	text-align: center;
+	padding: 8px 16px;
+	border: 1px solid #b1b1b1;
+}
+
+.top tbody tr:nth-child(odd) {
+	background-color: #e8e8e8;
+}
+
+.top tbody tr:nth-child(even) {
+	background-color: white;
 }

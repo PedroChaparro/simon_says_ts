@@ -1,4 +1,9 @@
-import { controller_start, controller_updateUserPattern } from '../controller/controller.js';
+import {
+	controller_start,
+	controller_updateUserPattern,
+	controller_addToLS,
+	controller_updateScoresTable,
+} from '../controller/controller.js';
 
 // Dom selectors
 export const startBtn: HTMLButtonElement | null = document.querySelector('button#start-game');
@@ -8,11 +13,18 @@ export const redBtn: HTMLDivElement | null = document.querySelector('div#red-but
 export const yellowBtn: HTMLDivElement | null = document.querySelector('div#yellow-button');
 export const blueBtn: HTMLDivElement | null = document.querySelector('div#blue-button');
 
+export const usernameContainer: HTMLDivElement | null =
+	document.querySelector('div.diffuser-player');
+const usernameBtn: HTMLButtonElement | null = document.querySelector('button#button-username');
+const usernameInput: HTMLInputElement | null = document.querySelector('input#username');
+
 const difficultyContainer: HTMLDivElement | null =
 	document.querySelector('div.diffuser-difficulty');
 const easyDiff: HTMLButtonElement | null = document.querySelector('button#button-easy');
 const normalDiff: HTMLButtonElement | null = document.querySelector('button#button-normal');
 const hardDiff: HTMLButtonElement | null = document.querySelector('button#button-hard');
+
+export const scoresTableBody: HTMLElement | null = document.getElementById('scores-body');
 
 // Events
 if (
@@ -24,7 +36,11 @@ if (
 	easyDiff &&
 	normalDiff &&
 	hardDiff &&
-	difficultyContainer
+	difficultyContainer &&
+	usernameContainer &&
+	usernameBtn &&
+	usernameInput &&
+	scoresTableBody
 ) {
 	// Buttons array
 	const panel_buttons: Array<HTMLDivElement> = [greenBtn, redBtn, yellowBtn, blueBtn];
@@ -57,6 +73,22 @@ if (
 			}
 		});
 	});
+
+	usernameBtn.addEventListener('click', () => {
+		// Sanitize input
+		usernameInput.value = usernameInput.value.trim().replace(/\s\s+/g, ' ');
+
+		// Verify input
+		if (usernameInput.value.length < 3) {
+			alert('Username must have at least 3 chars');
+		} else {
+			controller_addToLS(usernameInput.value);
+			usernameContainer.classList.remove('diffuser-player--active');
+		}
+	});
 } else {
 	console.error('Some selector was unaccesible');
 }
+
+// Update scores table on load
+controller_updateScoresTable();

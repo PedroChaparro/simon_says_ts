@@ -1,5 +1,14 @@
-import { colors } from '../model/model.js';
-import { startBtn, greenBtn, redBtn, yellowBtn, blueBtn } from '../view/view.js';
+import { gameScore } from '../model/interfaces.js';
+import { colors, min_score, addScore, gamesScores } from '../model/model.js';
+import {
+	startBtn,
+	greenBtn,
+	redBtn,
+	yellowBtn,
+	blueBtn,
+	usernameContainer,
+	scoresTableBody,
+} from '../view/view.js';
 
 // **** **** ****
 // **** Game variables ****
@@ -19,14 +28,9 @@ function getRandomColorIndex(): number {
 	return Math.floor(Math.random() * 4);
 }
 
-export function controller_start(delay: number): void {
-	// Reset values
-	currentLvl = 1;
-	userPattern = [];
-	gamePattern = [];
-	currentDelay = delay;
-
-	create_lvl(currentLvl);
+function compareLastIndex(gamePattern: Array<string>, userPattern: Array<string>): boolean {
+	const min_i = Math.min(gamePattern.length, userPattern.length) - 1;
+	return gamePattern[min_i] === userPattern[min_i];
 }
 
 function create_lvl(lvl: number): void {
@@ -84,6 +88,34 @@ function create_lvl(lvl: number): void {
 	console.log('Game: ', gamePattern);
 }
 
+export function controller_updateScoresTable(): void {
+	if (scoresTableBody) {
+		scoresTableBody.innerHTML = '';
+
+		gamesScores.forEach((score: gameScore) => {
+			if (scoresTableBody) {
+				scoresTableBody.innerHTML += `
+					<tr>
+						<td>${score.user}</td>
+						<td>${score.score}</td>
+						<td>${score.difficulty}</td>
+					</tr>
+				`;
+			}
+		});
+	}
+}
+
+export function controller_start(delay: number): void {
+	// Reset values
+	currentLvl = 1;
+	userPattern = [];
+	gamePattern = [];
+	currentDelay = delay;
+
+	create_lvl(currentLvl);
+}
+
 export function controller_updateUserPattern(userSelection: string): void {
 	// Receive while lenghts are not equals
 	if (userTurn && gamePattern.length !== userPattern.length) {
@@ -96,10 +128,15 @@ export function controller_updateUserPattern(userSelection: string): void {
 			currentLvl++;
 			create_lvl(currentLvl);
 		} else if (!correct) {
-			// User loose
+			// Play loose audio
 			const audio = new Audio('lib/sounds/wrong answer.mp3');
 			audio.play();
 			userTurn = false;
+
+			// Add to local storage (As needed)
+			if ((currentLvl > min_score || gamesScores.length < 10) && currentLvl > 1) {
+				usernameContainer?.classList.add('diffuser-player--active');
+			}
 
 			// Allow start a new game
 			if (startBtn) startBtn.disabled = false;
@@ -107,7 +144,21 @@ export function controller_updateUserPattern(userSelection: string): void {
 	}
 }
 
-function compareLastIndex(gamePattern: Array<string>, userPattern: Array<string>): boolean {
-	const min_i = Math.min(gamePattern.length, userPattern.length) - 1;
-	return gamePattern[min_i] === userPattern[min_i];
+export function controller_addToLS(username: string): void {
+	const record: gameScore = {
+		user: username,
+		score: currentLvl,
+		difficulty: '',
+	};
+
+	if (currentDelay === 1000) {
+		record.difficulty = 'Normal';
+	} else if (currentDelay === 1500) {
+		record.difficulty = 'Easy';
+	} else {
+		record.difficulty = 'Hard';
+	}
+
+	addScore(record);
+	controller_updateScoresTable();
 }
