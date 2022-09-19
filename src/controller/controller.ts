@@ -81,6 +81,12 @@ function create_lvl(lvl: number): void {
 				animate(lvl, currentDelay);
 			} else {
 				userTurn = true;
+
+				// Your turn audio
+				setTimeout(() => {
+					const audio = new Audio('lib/sounds/your_turn.mp3');
+					audio.play();
+				}, currentDelay + 250);
 			}
 		}, timeout);
 	})(lvl, 0);
