@@ -38,7 +38,6 @@ function create_lvl(lvl: number): void {
 	gamePattern = [];
 	userPattern = [];
 	userTurn = false;
-	if (currentTimeout) clearTimeout(currentTimeout);
 
 	(function animate(lvl, timeout) {
 		setTimeout(function () {
@@ -164,7 +163,14 @@ export function controller_updateUserPattern(userSelection: string): void {
 		if (correct && gamePattern.length === userPattern.length) {
 			// Continue to the next lvl
 			currentLvl++;
-			create_lvl(currentLvl);
+			const audio = new Audio('lib/sounds/next_level.mp3');
+			audio.play();
+			if (currentTimeout) clearTimeout(currentTimeout); // Clear max time timeout
+
+			// Create the next level
+			setTimeout(() => {
+				create_lvl(currentLvl);
+			}, 1000);
 		} else if (!correct) {
 			// Play loose audio
 			clearTimeout(currentTimeout);
