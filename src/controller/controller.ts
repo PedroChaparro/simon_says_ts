@@ -167,6 +167,10 @@ export function controller_updateUserPattern(userSelection: string): void {
 		// Verify if is correct
 		const correct = compareLastIndex(gamePattern, userPattern);
 
+		// Sound
+		const audio = new Audio('lib/sounds/ping_confirmation.mp3');
+		audio.play();
+
 		// Animate panel
 		animate_panel_option(userSelection);
 
