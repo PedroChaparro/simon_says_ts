@@ -229,3 +229,10 @@ body {
 .top tbody tr:nth-child(even) {
 	background-color: white;
 }
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+	.keys-map {
+		display: none;
+	}
+}
