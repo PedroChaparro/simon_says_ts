@@ -17,6 +17,7 @@ import {
 let userTurn = false;
 let currentLvl = 0;
 let currentDelay = 1000;
+let currentTimeout: number;
 let gamePattern: Array<string> = [];
 let userPattern: Array<string> = [];
 
@@ -37,6 +38,7 @@ function create_lvl(lvl: number): void {
 	gamePattern = [];
 	userPattern = [];
 	userTurn = false;
+	if (currentTimeout) clearTimeout(currentTimeout);
 
 	(function animate(lvl, timeout) {
 		setTimeout(function () {
@@ -63,6 +65,11 @@ function create_lvl(lvl: number): void {
 					const audio = new Audio('lib/sounds/your_turn.mp3');
 					audio.play();
 				}, 500);
+
+				// Set current timeout (Max time limit)
+				currentTimeout = setTimeout(() => {
+					timeout_loose();
+				}, currentDelay * gamePattern.length + 1500);
 			}
 		}, timeout);
 	})(lvl, 0);
@@ -97,6 +104,21 @@ function animate_panel_option(color: string): void {
 	setTimeout(() => {
 		if (lastAnimatedButton) lastAnimatedButton.classList.remove('panel-button--animated');
 	}, currentDelay / 2);
+}
+
+function timeout_loose(): void {
+	// Play loose audio
+	const audio = new Audio('lib/sounds/timeover.mp3');
+	audio.play();
+	userTurn = false;
+
+	// Add to local storage (As needed)
+	if ((currentLvl > min_score || gamesScores.length < 10) && currentLvl > 1) {
+		usernameContainer?.classList.add('diffuser-player--active');
+	}
+
+	// Allow start a new game
+	if (startBtn) startBtn.disabled = false;
 }
 
 export function controller_updateScoresTable(): void {
@@ -145,6 +167,7 @@ export function controller_updateUserPattern(userSelection: string): void {
 			create_lvl(currentLvl);
 		} else if (!correct) {
 			// Play loose audio
+			clearTimeout(currentTimeout);
 			const audio = new Audio('lib/sounds/wrong answer.mp3');
 			audio.play();
 			userTurn = false;
