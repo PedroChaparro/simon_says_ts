@@ -26,7 +26,16 @@ let userPattern: Array<string> = [];
 // **** **** ****
 
 function getRandomColorIndex(): number {
-	return Math.floor(Math.random() * 4);
+	let random = Math.floor(Math.random() * 4);
+
+	// Dont use repeated colors
+	if (gamePattern.length !== 0) {
+		do {
+			random = Math.floor(Math.random() * 4);
+		} while (colors[random] === gamePattern[gamePattern.length - 1]);
+	}
+
+	return random;
 }
 
 function compareLastIndex(gamePattern: Array<string>, userPattern: Array<string>): boolean {
@@ -43,6 +52,7 @@ function create_lvl(lvl: number): void {
 		setTimeout(function () {
 			// Get random color
 			const random = colors[getRandomColorIndex()];
+
 			// Play the color
 			const audio = new Audio(`lib/sounds/${random}.mp3`);
 			audio.play();
