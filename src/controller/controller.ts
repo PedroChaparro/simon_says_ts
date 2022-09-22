@@ -46,32 +46,8 @@ function create_lvl(lvl: number): void {
 			const audio = new Audio(`lib/sounds/${random}.mp3`);
 			audio.play();
 
-			let lastAnimatedButton: HTMLDivElement | null;
-
-			// Modify UI
-			switch (random) {
-				case 'green':
-					greenBtn?.classList.add('panel-button--animated');
-					lastAnimatedButton = greenBtn;
-					break;
-				case 'yellow':
-					yellowBtn?.classList.add('panel-button--animated');
-					lastAnimatedButton = yellowBtn;
-					break;
-				case 'blue':
-					blueBtn?.classList.add('panel-button--animated');
-					lastAnimatedButton = blueBtn;
-					break;
-				case 'red':
-					redBtn?.classList.add('panel-button--animated');
-					lastAnimatedButton = redBtn;
-					break;
-			}
-
-			// Remove animation class
-			setTimeout(() => {
-				lastAnimatedButton?.classList.remove('panel-button--animated');
-			}, currentDelay / 2);
+			// Animate panel
+			animate_panel_option(random);
 
 			// Add to the game pattern
 			gamePattern.push(random);
@@ -86,12 +62,41 @@ function create_lvl(lvl: number): void {
 				setTimeout(() => {
 					const audio = new Audio('lib/sounds/your_turn.mp3');
 					audio.play();
-				}, currentDelay + 250);
+				}, 500);
 			}
 		}, timeout);
 	})(lvl, 0);
 
 	console.log('Game: ', gamePattern);
+}
+
+function animate_panel_option(color: string): void {
+	// Show animation
+	let lastAnimatedButton: HTMLDivElement | null;
+
+	switch (color) {
+		case 'green':
+			greenBtn?.classList.add('panel-button--animated');
+			lastAnimatedButton = greenBtn;
+			break;
+		case 'red':
+			redBtn?.classList.add('panel-button--animated');
+			lastAnimatedButton = redBtn;
+			break;
+		case 'yellow':
+			yellowBtn?.classList.add('panel-button--animated');
+			lastAnimatedButton = yellowBtn;
+			break;
+		case 'blue':
+			blueBtn?.classList.add('panel-button--animated');
+			lastAnimatedButton = blueBtn;
+			break;
+	}
+
+	// Remove animation class
+	setTimeout(() => {
+		if (lastAnimatedButton) lastAnimatedButton.classList.remove('panel-button--animated');
+	}, currentDelay / 2);
 }
 
 export function controller_updateScoresTable(): void {
@@ -118,6 +123,7 @@ export function controller_start(delay: number): void {
 	userPattern = [];
 	gamePattern = [];
 	currentDelay = delay;
+	console.log('Started');
 
 	create_lvl(currentLvl);
 }
@@ -127,7 +133,11 @@ export function controller_updateUserPattern(userSelection: string): void {
 	if (userTurn && gamePattern.length !== userPattern.length) {
 		userPattern.push(userSelection);
 
+		// Verify if is correct
 		const correct = compareLastIndex(gamePattern, userPattern);
+
+		// Animate panel
+		animate_panel_option(userSelection);
 
 		if (correct && gamePattern.length === userPattern.length) {
 			// Continue to the next lvl
