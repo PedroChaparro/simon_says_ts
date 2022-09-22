@@ -86,6 +86,29 @@ if (
 			usernameContainer.classList.remove('diffuser-player--active');
 		}
 	});
+
+	// Play with keyboard
+	document.addEventListener('keypress', (e: KeyboardEvent) => {
+		const pressedKey = e.key;
+
+		switch (pressedKey) {
+			case 'w':
+				controller_updateUserPattern('green');
+				break;
+			case 'a':
+				controller_updateUserPattern('red');
+				break;
+			case 's':
+				controller_updateUserPattern('yellow');
+				break;
+			case 'd':
+				controller_updateUserPattern('blue');
+				break;
+			default:
+				console.warn('Not supported key');
+				break;
+		}
+	});
 } else {
 	console.error('Some selector was unaccesible');
 }
