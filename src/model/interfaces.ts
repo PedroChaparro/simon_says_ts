@@ -1,5 +1,5 @@
 export interface gameScore {
-	user: string;
-	score: number;
-	difficulty: string;
+  user: string;
+  score: number;
+  difficulty: string;
 }

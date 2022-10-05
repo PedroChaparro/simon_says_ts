@@ -1,8 +1,8 @@
 import {
-	controller_start,
-	controller_updateUserPattern,
-	controller_addToLS,
-	controller_updateScoresTable,
+  controller_start,
+  controller_updateUserPattern,
+  controller_addToLS,
+  controller_updateScoresTable,
 } from '../controller/controller.js';
 
 // Dom selectors
@@ -14,12 +14,12 @@ export const yellowBtn: HTMLDivElement | null = document.querySelector('div#yell
 export const blueBtn: HTMLDivElement | null = document.querySelector('div#blue-button');
 
 export const usernameContainer: HTMLDivElement | null =
-	document.querySelector('div.diffuser-player');
+  document.querySelector('div.diffuser-player');
 const usernameBtn: HTMLButtonElement | null = document.querySelector('button#button-username');
 const usernameInput: HTMLInputElement | null = document.querySelector('input#username');
 
 const difficultyContainer: HTMLDivElement | null =
-	document.querySelector('div.diffuser-difficulty');
+  document.querySelector('div.diffuser-difficulty');
 const easyDiff: HTMLButtonElement | null = document.querySelector('button#button-easy');
 const normalDiff: HTMLButtonElement | null = document.querySelector('button#button-normal');
 const hardDiff: HTMLButtonElement | null = document.querySelector('button#button-hard');
@@ -28,89 +28,89 @@ export const scoresTableBody: HTMLElement | null = document.getElementById('scor
 
 // Events
 if (
-	startBtn &&
-	greenBtn &&
-	redBtn &&
-	yellowBtn &&
-	blueBtn &&
-	easyDiff &&
-	normalDiff &&
-	hardDiff &&
-	difficultyContainer &&
-	usernameContainer &&
-	usernameBtn &&
-	usernameInput &&
-	scoresTableBody
+  startBtn &&
+  greenBtn &&
+  redBtn &&
+  yellowBtn &&
+  blueBtn &&
+  easyDiff &&
+  normalDiff &&
+  hardDiff &&
+  difficultyContainer &&
+  usernameContainer &&
+  usernameBtn &&
+  usernameInput &&
+  scoresTableBody
 ) {
-	// Buttons array
-	const panel_buttons: Array<HTMLDivElement> = [greenBtn, redBtn, yellowBtn, blueBtn];
-	const diff_buttons: Array<HTMLButtonElement> = [easyDiff, normalDiff, hardDiff];
+  // Buttons array
+  const panel_buttons: Array<HTMLDivElement> = [greenBtn, redBtn, yellowBtn, blueBtn];
+  const diff_buttons: Array<HTMLButtonElement> = [easyDiff, normalDiff, hardDiff];
 
-	// Start button
-	startBtn.addEventListener('click', () => {
-		// Show difficulty selector
-		difficultyContainer.classList.add('diffuser-difficulty--active');
-		startBtn.disabled = true; // Disable button
-	});
+  // Start button
+  startBtn.addEventListener('click', () => {
+    // Show difficulty selector
+    difficultyContainer.classList.add('diffuser-difficulty--active');
+    startBtn.disabled = true; // Disable button
+  });
 
-	panel_buttons.forEach((button: HTMLDivElement) => {
-		button.addEventListener('click', (e: Event) => {
-			const target = e.target;
-			if (target instanceof HTMLDivElement) {
-				if (target.dataset.value) controller_updateUserPattern(target.dataset.value);
-			}
-		});
-	});
+  panel_buttons.forEach((button: HTMLDivElement) => {
+    button.addEventListener('click', (e: Event) => {
+      const target = e.target;
+      if (target instanceof HTMLDivElement) {
+        if (target.dataset.value) controller_updateUserPattern(target.dataset.value);
+      }
+    });
+  });
 
-	diff_buttons.forEach((button: HTMLButtonElement) => {
-		button.addEventListener('click', (e: Event) => {
-			// Hide difficulty selector
-			difficultyContainer.classList.remove('diffuser-difficulty--active');
+  diff_buttons.forEach((button: HTMLButtonElement) => {
+    button.addEventListener('click', (e: Event) => {
+      // Hide difficulty selector
+      difficultyContainer.classList.remove('diffuser-difficulty--active');
 
-			const target = e.target;
-			if (target instanceof HTMLButtonElement) {
-				if (target.dataset.delay) controller_start(parseInt(target.dataset.delay));
-			}
-		});
-	});
+      const target = e.target;
+      if (target instanceof HTMLButtonElement) {
+        if (target.dataset.delay) controller_start(parseInt(target.dataset.delay));
+      }
+    });
+  });
 
-	usernameBtn.addEventListener('click', () => {
-		// Sanitize input
-		usernameInput.value = usernameInput.value.trim().replace(/\s\s+/g, ' ');
+  usernameBtn.addEventListener('click', () => {
+    // Sanitize input
+    usernameInput.value = usernameInput.value.trim().replace(/\s\s+/g, ' ');
 
-		// Verify input
-		if (usernameInput.value.length < 3) {
-			alert('Username must have at least 3 chars');
-		} else {
-			controller_addToLS(usernameInput.value);
-			usernameContainer.classList.remove('diffuser-player--active');
-		}
-	});
+    // Verify input
+    if (usernameInput.value.length < 3) {
+      alert('Username must have at least 3 chars');
+    } else {
+      controller_addToLS(usernameInput.value);
+      usernameContainer.classList.remove('diffuser-player--active');
+    }
+  });
 
-	// Play with keyboard
-	document.addEventListener('keypress', (e: KeyboardEvent) => {
-		const pressedKey = e.key;
+  // Play with keyboard
+  document.addEventListener('keypress', (e: KeyboardEvent) => {
+    const pressedKey = e.key;
 
-		switch (pressedKey) {
-			case 'w':
-				controller_updateUserPattern('green');
-				break;
-			case 'a':
-				controller_updateUserPattern('red');
-				break;
-			case 's':
-				controller_updateUserPattern('yellow');
-				break;
-			case 'd':
-				controller_updateUserPattern('blue');
-				break;
-			default:
-				console.warn('Not supported key');
-				break;
-		}
-	});
+    switch (pressedKey) {
+      case 'w':
+        controller_updateUserPattern('green');
+        break;
+      case 'a':
+        controller_updateUserPattern('red');
+        break;
+      case 's':
+        controller_updateUserPattern('yellow');
+        break;
+      case 'd':
+        controller_updateUserPattern('blue');
+        break;
+      default:
+        console.warn('Not supported key');
+        break;
+    }
+  });
 } else {
-	console.error('Some selector was unaccesible');
+  console.error('Some selector was unaccesible');
 }
 
 // Update scores table on load
