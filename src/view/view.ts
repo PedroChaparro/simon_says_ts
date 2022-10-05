@@ -1,8 +1,8 @@
+import { gameScore } from 'model/interfaces.js';
 import {
   controller_start,
   controller_updateUserPattern,
   controller_SaveResult,
-  controller_updateScoresTable,
   controller_updateMinScore,
 } from '../controller/controller.js';
 
@@ -117,5 +117,19 @@ if (
   console.error('Some selector was unaccesible');
 }
 
-// Update scores table on load
-controller_updateScoresTable();
+export const updateTableUI = (scores: Array<gameScore>) => {
+  if (scoresTableBody) {
+    // Clear current content
+    scoresTableBody.innerHTML = '';
+
+    scores.forEach((score) => {
+      scoresTableBody.innerHTML += `
+        <tr>
+						<td>${score.username}</td>
+						<td>${score.score}</td>
+						<td>${score.difficulty}</td>
+					</tr>
+      `;
+    });
+  }
+};

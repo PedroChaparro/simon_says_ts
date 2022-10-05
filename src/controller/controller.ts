@@ -1,6 +1,14 @@
 import { gameScore } from '../model/interfaces.js';
 import { colors } from '../model/model.js';
-import { startBtn, greenBtn, redBtn, yellowBtn, blueBtn, usernameContainer } from '../view/view.js';
+import {
+  updateTableUI,
+  startBtn,
+  greenBtn,
+  redBtn,
+  yellowBtn,
+  blueBtn,
+  usernameContainer,
+} from '../view/view.js';
 
 // **** **** ****
 // **** Game variables ****
@@ -198,7 +206,7 @@ export async function controller_SaveResult(username: string): Promise<void> {
   }
 
   // Fetch api to save the new result
-  await fetch('http://localhost:3030/score', {
+  const response = await fetch('http://localhost:3030/score', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -206,10 +214,13 @@ export async function controller_SaveResult(username: string): Promise<void> {
     body: JSON.stringify(record),
   });
 
+  const newScores = await response.json();
+
   // Update current min
   controller_updateMinScore();
 
   // Update UI table
+  updateTableUI(newScores.scores);
 }
 
 export async function controller_updateMinScore(): Promise<void> {
