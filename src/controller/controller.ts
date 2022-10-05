@@ -123,7 +123,7 @@ function timeout_loose(): void {
   userTurn = false;
 
   // Add to local storage (As needed)
-  if (currentLvl > 1) {
+  if (currentLvl > currentMinScore && currentLvl > 1) {
     usernameContainer?.classList.add('diffuser-player--active');
   }
 
@@ -180,7 +180,7 @@ export function controller_updateUserPattern(userSelection: string): void {
       userTurn = false;
 
       // Add to local storage (As needed)
-      if (currentLvl > 1) {
+      if (currentLvl > currentMinScore && currentLvl > 1) {
         usernameContainer?.classList.add('diffuser-player--active');
       }
 
