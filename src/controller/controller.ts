@@ -1,14 +1,6 @@
 import { gameScore } from '../model/interfaces.js';
-import { colors, min_score, addScore, gamesScores } from '../model/model.js';
-import {
-  startBtn,
-  greenBtn,
-  redBtn,
-  yellowBtn,
-  blueBtn,
-  usernameContainer,
-  scoresTableBody,
-} from '../view/view.js';
+import { colors } from '../model/model.js';
+import { startBtn, greenBtn, redBtn, yellowBtn, blueBtn, usernameContainer } from '../view/view.js';
 
 // **** **** ****
 // **** Game variables ****
@@ -18,6 +10,7 @@ let userTurn = false;
 let currentLvl = 0;
 let currentDelay = 1000;
 let currentTimeout: number;
+let currentMinScore: number;
 let gamePattern: Array<string> = [];
 let userPattern: Array<string> = [];
 
@@ -54,7 +47,7 @@ function create_lvl(lvl: number): void {
       const random = colors[getRandomColorIndex()];
 
       // Play the color
-      const audio = new Audio(`lib/sounds/${random}.mp3`);
+      const audio = new Audio(`/public/lib/sounds/${random}.mp3`);
       audio.play();
 
       // Animate panel
@@ -71,7 +64,7 @@ function create_lvl(lvl: number): void {
 
         // Your turn audio
         setTimeout(() => {
-          const audio = new Audio('lib/sounds/your_turn.mp3');
+          const audio = new Audio('/public/lib/sounds/your_turn.mp3');
           audio.play();
         }, 500);
 
@@ -117,12 +110,12 @@ function animate_panel_option(color: string): void {
 
 function timeout_loose(): void {
   // Play loose audio
-  const audio = new Audio('lib/sounds/timeover.mp3');
+  const audio = new Audio('/public/lib/sounds/timeover.mp3');
   audio.play();
   userTurn = false;
 
   // Add to local storage (As needed)
-  if ((currentLvl > min_score || gamesScores.length < 10) && currentLvl > 1) {
+  if (currentLvl > 1) {
     usernameContainer?.classList.add('diffuser-player--active');
   }
 
@@ -131,21 +124,7 @@ function timeout_loose(): void {
 }
 
 export function controller_updateScoresTable(): void {
-  if (scoresTableBody) {
-    scoresTableBody.innerHTML = '';
-
-    gamesScores.forEach((score: gameScore) => {
-      if (scoresTableBody) {
-        scoresTableBody.innerHTML += `
-					<tr>
-						<td>${score.user}</td>
-						<td>${score.score}</td>
-						<td>${score.difficulty}</td>
-					</tr>
-				`;
-      }
-    });
-  }
+  console.log('Update table');
 }
 
 export function controller_start(delay: number): void {
@@ -168,7 +147,7 @@ export function controller_updateUserPattern(userSelection: string): void {
     const correct = compareLastIndex(gamePattern, userPattern);
 
     // Sound
-    const audio = new Audio('lib/sounds/ping_confirmation.mp3');
+    const audio = new Audio('/public/lib/sounds/ping_confirmation.mp3');
     audio.play();
 
     // Animate panel
@@ -177,7 +156,7 @@ export function controller_updateUserPattern(userSelection: string): void {
     if (correct && gamePattern.length === userPattern.length) {
       // Continue to the next lvl
       currentLvl++;
-      const audio = new Audio('lib/sounds/next_level.mp3');
+      const audio = new Audio('/public/lib/sounds/next_level.mp3');
       audio.play();
       if (currentTimeout) clearTimeout(currentTimeout); // Clear max time timeout
 
@@ -188,12 +167,12 @@ export function controller_updateUserPattern(userSelection: string): void {
     } else if (!correct) {
       // Play loose audio
       clearTimeout(currentTimeout);
-      const audio = new Audio('lib/sounds/wrong answer.mp3');
+      const audio = new Audio('/public/lib/sounds/wrong answer.mp3');
       audio.play();
       userTurn = false;
 
       // Add to local storage (As needed)
-      if ((currentLvl > min_score || gamesScores.length < 10) && currentLvl > 1) {
+      if (currentLvl > 1) {
         usernameContainer?.classList.add('diffuser-player--active');
       }
 
@@ -203,9 +182,9 @@ export function controller_updateUserPattern(userSelection: string): void {
   }
 }
 
-export function controller_addToLS(username: string): void {
+export async function controller_SaveResult(username: string): Promise<void> {
   const record: gameScore = {
-    user: username,
+    username: username,
     score: currentLvl,
     difficulty: '',
   };
@@ -218,8 +197,23 @@ export function controller_addToLS(username: string): void {
     record.difficulty = 'Hard';
   }
 
-  addScore(record);
-  controller_updateScoresTable();
+  // Fetch api to save the new result
+  await fetch('http://localhost:3030/score', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(record),
+  });
+
+  // Update current min
+  controller_updateMinScore();
+
+  // Update UI table
 }
 
-// Hi from vim
+export async function controller_updateMinScore(): Promise<void> {
+  const results = await fetch('http://localhost:3030/scores');
+  const resultsJson = await results.json();
+  currentMinScore = resultsJson.scores[resultsJson.scores.length - 1].score || 1;
+}

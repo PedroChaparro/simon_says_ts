@@ -1,8 +1,9 @@
 import {
   controller_start,
   controller_updateUserPattern,
-  controller_addToLS,
+  controller_SaveResult,
   controller_updateScoresTable,
+  controller_updateMinScore,
 } from '../controller/controller.js';
 
 // Dom selectors
@@ -42,6 +43,9 @@ if (
   usernameInput &&
   scoresTableBody
 ) {
+  // Update min score
+  controller_updateMinScore();
+
   // Buttons array
   const panel_buttons: Array<HTMLDivElement> = [greenBtn, redBtn, yellowBtn, blueBtn];
   const diff_buttons: Array<HTMLButtonElement> = [easyDiff, normalDiff, hardDiff];
@@ -82,7 +86,7 @@ if (
     if (usernameInput.value.length < 3) {
       alert('Username must have at least 3 chars');
     } else {
-      controller_addToLS(usernameInput.value);
+      controller_SaveResult(usernameInput.value);
       usernameContainer.classList.remove('diffuser-player--active');
     }
   });
