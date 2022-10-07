@@ -9,6 +9,7 @@ class Controller {
   colors: Array<string> = ['green', 'red', 'blue', 'yellow'];
   #currentLevel: number = 1;
   #currentTimeout: number = 1200;
+  #currentTimeover: number = -1;
   #isUserTurn: boolean = false;
 
   // Functions
@@ -30,6 +31,7 @@ class Controller {
       this.#currentLevel = 1;
       this.#currentTimeout = 1200;
       this.#isUserTurn = false;
+      this.#currentTimeover = -1;
     };
 
     this.#randomColorIndex = (): number => {
@@ -47,7 +49,7 @@ class Controller {
 
     // Click event handler
     this.handlePanelClick = async (button: HTMLElement): Promise<void> => {
-      if (this.#isUserTurn && this.#gamePattern.length != this.#userPattern.length) {
+      if (this.#isUserTurn && this.#gamePattern.length !== this.#userPattern.length) {
         if (button.dataset.value) {
           // Play confirmation sound
           const audio = new Audio('/lib/sounds/ping_confirmation.mp3');
@@ -57,7 +59,7 @@ class Controller {
           button.classList.add('panel-button--animated');
           this.#userPattern.push(button.dataset.value);
 
-          setTimeout(() => {
+          window.setTimeout(() => {
             button.classList.remove('panel-button--animated');
           }, this.#currentTimeout / 2);
 
@@ -70,7 +72,7 @@ class Controller {
             const audio = new Audio('/lib/sounds/next_level.mp3');
             audio.play();
 
-            setTimeout(() => {
+            window.setTimeout(() => {
               this.#currentLevel++;
               //console.log('Aumentado a: ', this.#currentLevel)
               this.#generateNewLevel();
@@ -88,17 +90,15 @@ class Controller {
               document
                 .querySelector('div.diffuser-player')
                 ?.classList.add('diffuser-player--active');
-              console.log('Show');
             } else {
               this.#reset();
-            }
+              // Unlock start button
+              const startButton: HTMLButtonElement | null =
+                document.querySelector('button#start-game');
 
-            // Unlock start button
-            const startButton: HTMLButtonElement | null =
-              document.querySelector('button#start-game');
-
-            if (startButton) {
-              startButton.disabled = false;
+              if (startButton) {
+                startButton.disabled = false;
+              }
             }
           }
         }
@@ -139,14 +139,14 @@ class Controller {
       if (panelItem) {
         panelItem.classList.add('panel-button--animated');
 
-        setTimeout(() => {
+        window.setTimeout(() => {
           panelItem.classList.remove('panel-button--animated');
         }, this.#currentTimeout / 2);
       }
     };
 
     // Generate a single step
-    this.#generateStep = (remaining: number): void => {
+    this.#generateStep = async (remaining: number): Promise<void> => {
       // Get random color and play color audio
       const randomColor = this.colors[this.#randomColorIndex()];
       const audio = new Audio(`/lib/sounds/${randomColor}.mp3`);
@@ -154,14 +154,13 @@ class Controller {
       this.#handleStepAnimation(randomColor);
       audio.play();
 
-      // Recursively iterate
       if (--remaining) {
-        setTimeout(() => {
+        window.setTimeout(() => {
           this.#generateStep(remaining);
         }, this.#currentTimeout);
       } else {
         // Play your turn audio
-        setTimeout(() => {
+        window.setTimeout(() => {
           const audio = new Audio('/lib/sounds/your_turn.mp3');
           audio.play();
         }, 500);
@@ -173,13 +172,16 @@ class Controller {
     // Start a new level (First step of the level)
     this.#generateNewLevel = function (): void {
       this.#isUserTurn = false;
+      this.#gamePattern = [];
+      this.#userPattern = [];
       this.#generateStep(this.#currentLevel);
     };
 
     // Start a new game (From level 1)
-    this.start = (timeout: number): void => {
+    this.start = (delay: number): void => {
       this.#reset();
       this.#generateNewLevel();
+      this.#currentTimeout = delay;
     };
   }
 }
