@@ -59,6 +59,27 @@ class View {
         .querySelector('div.diffuser-difficulty')
         ?.classList.remove('diffuser-difficulty--active');
     });
+
+    // Username field
+    document.getElementById('button-username')?.addEventListener('click', (e) => {
+      // Get input value and sanitize it
+      const usernameInput: HTMLInputElement | null = document.querySelector('input#username');
+
+      if (usernameInput) {
+        // "Sanitize"
+        usernameInput.value = usernameInput.value.trim().replace(/\s\s+/g, ' ');
+
+        // Validate
+        if (usernameInput.value.length < 3) {
+          alert('Username must have at least 3 chars');
+        } else {
+          this.Controller.handleUsernameField(usernameInput.value);
+        }
+
+        // Hide modal
+        document.querySelector('div.diffuser-player')?.classList.remove('diffuser-player--active');
+      }
+    });
   }
 }
 

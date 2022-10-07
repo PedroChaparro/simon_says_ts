@@ -1,7 +1,9 @@
 import { model } from '../model/model.new.js';
+import { Iscore } from '../interfaces/interfaces.js';
 
 class Controller {
   // Attributes
+  Model = model;
   #gamePattern: Array<string> = [];
   #userPattern: Array<string> = [];
   colors: Array<string> = ['green', 'red', 'blue', 'yellow'];
@@ -11,6 +13,7 @@ class Controller {
 
   // Functions
   handlePanelClick: Function;
+  handleUsernameField: Function;
   #handleStepAnimation: Function;
   #generateNewLevel: Function;
   #generateStep: Function;
@@ -43,7 +46,7 @@ class Controller {
     };
 
     // Click event handler
-    this.handlePanelClick = (button: HTMLElement): void => {
+    this.handlePanelClick = async (button: HTMLElement): Promise<void> => {
       if (this.#isUserTurn && this.#gamePattern.length != this.#userPattern.length) {
         if (button.dataset.value) {
           // Play confirmation sound
@@ -58,6 +61,7 @@ class Controller {
             button.classList.remove('panel-button--animated');
           }, this.#currentTimeout / 2);
 
+          // *** *** ***
           // Validate user entry
           const isCorrect = this.#compareLastIndex();
 
@@ -68,13 +72,26 @@ class Controller {
 
             setTimeout(() => {
               this.#currentLevel++;
+              //console.log('Aumentado a: ', this.#currentLevel)
               this.#generateNewLevel();
             }, 1000);
           } else if (!isCorrect) {
             // End level
             const audio = new Audio('/lib/sounds/wrong answer.mp3');
             audio.play();
-            this.#reset();
+
+            // Show username dialog as needed
+            const scores: Array<Iscore> = await this.Model.getCurrentScores();
+            const minScore: number = scores[scores.length - 1].score;
+
+            if (scores.length < 10 || this.#currentLevel > minScore) {
+              document
+                .querySelector('div.diffuser-player')
+                ?.classList.add('diffuser-player--active');
+              console.log('Show');
+            } else {
+              this.#reset();
+            }
 
             // Unlock start button
             const startButton: HTMLButtonElement | null =
@@ -86,6 +103,26 @@ class Controller {
           }
         }
       }
+    };
+
+    //  Handle username when game finish
+    this.handleUsernameField = (username: string): void => {
+      const scoreObject: Iscore = {
+        username,
+        score: this.#currentLevel,
+        difficulty: 'Unknown',
+      };
+
+      if (this.#currentTimeout === 1500) {
+        scoreObject.difficulty = 'Easy';
+      } else if (this.#currentLevel === 800) {
+        scoreObject.difficulty = 'Normal';
+      } else {
+        scoreObject.difficulty = 'Easy';
+      }
+
+      this.Model.saveNewScore(scoreObject);
+      this.#reset();
     };
 
     // Compare last user patter index against game pattern
@@ -136,8 +173,6 @@ class Controller {
     // Start a new level (First step of the level)
     this.#generateNewLevel = function (): void {
       this.#isUserTurn = false;
-      this.#gamePattern = [];
-      this.#userPattern = [];
       this.#generateStep(this.#currentLevel);
     };
 
