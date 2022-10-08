@@ -15,6 +15,7 @@ class Controller {
   // Functions
   handlePanelClick: Function;
   handleUsernameField: Function;
+  drawTable: Function;
   #handleStepAnimation: Function;
   #generateNewLevel: Function;
   #generateStep: Function;
@@ -140,6 +141,26 @@ class Controller {
       this.Model.saveNewScore(scoreObject);
       this.#reset();
     };
+
+    // Draw / update scores table
+    this.drawTable = async (): Promise<void> => {
+      const tableBody: HTMLElement | null = document.getElementById('scores-body');
+
+      if(tableBody){
+	const scores: Array<Iscore> = await this.Model.getCurrentScores();
+	tableBody.innerHTML = '';
+
+	scores.forEach(score => {
+	  tableBody.innerHTML += `
+	    <tr>
+	      <td>${score.username}</td>
+	      <td>${score.score}</td>
+	      <td>${score.difficulty}</td>
+	    </tr>
+	  `
+	})
+      }
+    }
 
     // Compare last user patter index against game pattern
     this.#compareLastIndex = (): boolean => {

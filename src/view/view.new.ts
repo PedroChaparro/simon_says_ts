@@ -45,6 +45,12 @@ class View {
       }
     });
 
+    // *** *** ***
+    // Show table on load
+    window.addEventListener('load', () => {
+      console.log('Welcome')
+    })
+
     // Show difficulty selection modal
     document.querySelector('button#start-game')?.addEventListener('click', (e) => {
       const difficultyContainer = document.querySelector('div.diffuser-difficulty');
