@@ -48,8 +48,8 @@ class View {
     // *** *** ***
     // Show table on load
     window.addEventListener('load', () => {
-      console.log('Welcome')
-    })
+      this.Controller.drawTable();
+    });
 
     // Show difficulty selection modal
     document.querySelector('button#start-game')?.addEventListener('click', (e) => {

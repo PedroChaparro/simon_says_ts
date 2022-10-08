@@ -51,23 +51,24 @@ class Controller {
 
     // Loose handler
     this.#endGame = async (): Promise<void> => {
+      this.#isUserTurn = false;
+
       // Remove current timeout as needed
       if (this.#currentTimeover !== -1) window.clearTimeout(this.#currentTimeover);
       // Show username dialog as needed
       const scores: Array<Iscore> = await this.Model.getCurrentScores();
-      const minScore: number = scores[scores.length - 1].score;
-
+      const minScore: number = scores.length !== 0 ? scores[scores.length - 1].score : 1;
       if (scores.length < 10 || this.#currentLevel > minScore) {
         document.querySelector('div.diffuser-player')?.classList.add('diffuser-player--active');
       } else {
         this.#reset();
+      }
 
-        // Unlock start button
-        const startButton: HTMLButtonElement | null = document.querySelector('button#start-game');
+      // Unlock start button
+      const startButton: HTMLButtonElement | null = document.querySelector('button#start-game');
 
-        if (startButton) {
-          startButton.disabled = false;
-        }
+      if (startButton) {
+        startButton.disabled = false;
       }
     };
 
@@ -123,7 +124,9 @@ class Controller {
     };
 
     //  Handle username when game finish
-    this.handleUsernameField = (username: string): void => {
+    this.handleUsernameField = async (username: string): Promise<void> => {
+      // console.log(this.#currentTimeout);
+
       const scoreObject: Iscore = {
         username,
         score: this.#currentLevel,
@@ -132,13 +135,14 @@ class Controller {
 
       if (this.#currentTimeout === 1500) {
         scoreObject.difficulty = 'Easy';
-      } else if (this.#currentLevel === 800) {
+      } else if (this.#currentTimeout === 800) {
         scoreObject.difficulty = 'Normal';
       } else {
-        scoreObject.difficulty = 'Easy';
+        scoreObject.difficulty = 'Hard';
       }
 
-      this.Model.saveNewScore(scoreObject);
+      await this.Model.saveNewScore(scoreObject);
+      this.drawTable();
       this.#reset();
     };
 
@@ -146,21 +150,21 @@ class Controller {
     this.drawTable = async (): Promise<void> => {
       const tableBody: HTMLElement | null = document.getElementById('scores-body');
 
-      if(tableBody){
-	const scores: Array<Iscore> = await this.Model.getCurrentScores();
-	tableBody.innerHTML = '';
+      if (tableBody) {
+        const scores: Array<Iscore> = await this.Model.getCurrentScores();
+        tableBody.innerHTML = '';
 
-	scores.forEach(score => {
-	  tableBody.innerHTML += `
+        scores.forEach((score) => {
+          tableBody.innerHTML += `
 	    <tr>
 	      <td>${score.username}</td>
 	      <td>${score.score}</td>
 	      <td>${score.difficulty}</td>
 	    </tr>
-	  `
-	})
+	  `;
+        });
       }
-    }
+    };
 
     // Compare last user patter index against game pattern
     this.#compareLastIndex = (): boolean => {
@@ -226,8 +230,8 @@ class Controller {
     // Start a new game (From level 1)
     this.start = (delay: number): void => {
       this.#reset();
-      this.#generateNewLevel();
       this.#currentTimeout = delay;
+      this.#generateNewLevel();
     };
   }
 }
