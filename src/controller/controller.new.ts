@@ -71,7 +71,7 @@ class Controller {
     };
 
     // Click event handler
-    this.handlePanelClick = async (button: HTMLElement): Promise<void> => {
+    this.handlePanelClick = async (color: string): Promise<void> => {
       if (this.#isUserTurn && this.#gamePattern.length !== this.#userPattern.length) {
         if (button.dataset.value) {
           // Play confirmation sound
@@ -80,7 +80,7 @@ class Controller {
 
           // animate button
           button.classList.add('panel-button--animated');
-          this.#userPattern.push(button.dataset.value);
+          this.#userPattern.push(color);
 
           window.setTimeout(() => {
             button.classList.remove('panel-button--animated');

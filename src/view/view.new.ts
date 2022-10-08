@@ -8,20 +8,43 @@ class View {
     // *** *** ***
     // Event listeners
     document.getElementById('green-button')?.addEventListener('click', (e) => {
-      this.Controller.handlePanelClick(e.target);
+      this.Controller.handlePanelClick('green');
     });
 
     document.getElementById('red-button')?.addEventListener('click', (e) => {
-      this.Controller.handlePanelClick(e.target);
+      this.Controller.handlePanelClick('red');
     });
 
     document.getElementById('blue-button')?.addEventListener('click', (e) => {
-      this.Controller.handlePanelClick(e.target);
+      this.Controller.handlePanelClick('blue');
     });
 
     document.getElementById('yellow-button')?.addEventListener('click', (e) => {
-      this.Controller.handlePanelClick(e.target);
+      this.Controller.handlePanelClick('yellow');
     });
+
+    // *** *** ***
+    // Play with arrows
+
+    document.addEventListener('keypress', (e: KeyboardEvent) => {
+      const key = e.key;
+
+      switch(key){
+	case 'w':
+	  this.Controller.handlePanelClick('green');
+	  break;
+	case 'a': 
+	  this.Controller.handlePanelClick('red');
+	  break;
+	case 's':
+	  this.Controller.handlePanelClick('yellow');
+	  break;
+	case 'd':
+	  this.Controller.handlePanelClick('blue');
+	  break;
+      }
+
+    })
 
     // Show difficulty selection modal
     document.querySelector('button#start-game')?.addEventListener('click', (e) => {
