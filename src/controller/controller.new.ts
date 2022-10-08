@@ -21,6 +21,7 @@ class Controller {
   #reset: Function;
   #randomColorIndex: Function;
   #compareLastIndex: Function;
+  #endGame: Function;
   start: Function;
 
   constructor() {
@@ -47,6 +48,26 @@ class Controller {
       return random;
     };
 
+    // Loose handler
+    this.#endGame = async (): Promise<void> => {
+      // Show username dialog as needed
+      const scores: Array<Iscore> = await this.Model.getCurrentScores();
+      const minScore: number = scores[scores.length - 1].score;
+
+      if (scores.length < 10 || this.#currentLevel > minScore) {
+        document.querySelector('div.diffuser-player')?.classList.add('diffuser-player--active');
+      } else {
+        this.#reset();
+
+        // Unlock start button
+        const startButton: HTMLButtonElement | null = document.querySelector('button#start-game');
+
+        if (startButton) {
+          startButton.disabled = false;
+        }
+      }
+    };
+
     // Click event handler
     this.handlePanelClick = async (button: HTMLElement): Promise<void> => {
       if (this.#isUserTurn && this.#gamePattern.length !== this.#userPattern.length) {
@@ -68,13 +89,19 @@ class Controller {
           const isCorrect = this.#compareLastIndex();
 
           if (isCorrect && this.#gamePattern.length === this.#userPattern.length) {
+            // Clear previous time limit
+            if (this.#currentTimeover !== -1) window.clearTimeout(this.#currentTimeover);
+
             // Continue to the next level
             const audio = new Audio('/lib/sounds/next_level.mp3');
             audio.play();
 
+            // Reset game array
+            this.#gamePattern = [];
+            this.#userPattern = [];
+
             window.setTimeout(() => {
               this.#currentLevel++;
-              //console.log('Aumentado a: ', this.#currentLevel)
               this.#generateNewLevel();
             }, 1000);
           } else if (!isCorrect) {
@@ -82,24 +109,7 @@ class Controller {
             const audio = new Audio('/lib/sounds/wrong answer.mp3');
             audio.play();
 
-            // Show username dialog as needed
-            const scores: Array<Iscore> = await this.Model.getCurrentScores();
-            const minScore: number = scores[scores.length - 1].score;
-
-            if (scores.length < 10 || this.#currentLevel > minScore) {
-              document
-                .querySelector('div.diffuser-player')
-                ?.classList.add('diffuser-player--active');
-            } else {
-              this.#reset();
-              // Unlock start button
-              const startButton: HTMLButtonElement | null =
-                document.querySelector('button#start-game');
-
-              if (startButton) {
-                startButton.disabled = false;
-              }
-            }
+            this.#endGame();
           }
         }
       }
@@ -148,6 +158,7 @@ class Controller {
     // Generate a single step
     this.#generateStep = async (remaining: number): Promise<void> => {
       // Get random color and play color audio
+      this.#isUserTurn = false;
       const randomColor = this.colors[this.#randomColorIndex()];
       const audio = new Audio(`/lib/sounds/${randomColor}.mp3`);
       this.#gamePattern.push(randomColor);
@@ -159,13 +170,21 @@ class Controller {
           this.#generateStep(remaining);
         }, this.#currentTimeout);
       } else {
+        this.#isUserTurn = true;
+
         // Play your turn audio
         window.setTimeout(() => {
           const audio = new Audio('/lib/sounds/your_turn.mp3');
           audio.play();
         }, 500);
 
-        this.#isUserTurn = true;
+        // Create new time limit
+        this.#currentTimeover = window.setTimeout(() => {
+          const audio = new Audio('/lib/sounds/timeover.mp3');
+          audio.play();
+
+          this.#endGame();
+        }, this.#currentTimeout * this.#gamePattern.length + 2000);
       }
     };
 
