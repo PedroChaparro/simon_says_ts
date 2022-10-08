@@ -1,4 +1,5 @@
 import Fastify, { FastifyInstance } from 'fastify';
+import FastifyCors from '@fastify/cors';
 import { router } from './routes/router.js';
 
 class Server {
@@ -12,6 +13,10 @@ class Server {
 
   config(): void {
     this.app.register(router.routes);
+    this.app.register(FastifyCors, {
+      origin: '*',
+      methods: ['POST', 'GET'],
+    });
   }
 
   start(): void {
