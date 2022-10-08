@@ -29,22 +29,21 @@ class View {
     document.addEventListener('keypress', (e: KeyboardEvent) => {
       const key = e.key;
 
-      switch(key){
-	case 'w':
-	  this.Controller.handlePanelClick('green');
-	  break;
-	case 'a': 
-	  this.Controller.handlePanelClick('red');
-	  break;
-	case 's':
-	  this.Controller.handlePanelClick('yellow');
-	  break;
-	case 'd':
-	  this.Controller.handlePanelClick('blue');
-	  break;
+      switch (key) {
+        case 'w':
+          this.Controller.handlePanelClick('green');
+          break;
+        case 'a':
+          this.Controller.handlePanelClick('red');
+          break;
+        case 's':
+          this.Controller.handlePanelClick('yellow');
+          break;
+        case 'd':
+          this.Controller.handlePanelClick('blue');
+          break;
       }
-
-    })
+    });
 
     // Show difficulty selection modal
     document.querySelector('button#start-game')?.addEventListener('click', (e) => {

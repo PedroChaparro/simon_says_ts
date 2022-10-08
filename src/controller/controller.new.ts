@@ -51,7 +51,7 @@ class Controller {
     // Loose handler
     this.#endGame = async (): Promise<void> => {
       // Remove current timeout as needed
-      if(this.#currentTimeover !== -1) window.clearTimeout(this.#currentTimeover);
+      if (this.#currentTimeover !== -1) window.clearTimeout(this.#currentTimeover);
       // Show username dialog as needed
       const scores: Array<Iscore> = await this.Model.getCurrentScores();
       const minScore: number = scores[scores.length - 1].score;
@@ -72,46 +72,50 @@ class Controller {
 
     // Click event handler
     this.handlePanelClick = async (color: string): Promise<void> => {
-      if (this.#isUserTurn && this.#gamePattern.length !== this.#userPattern.length) {
-        if (button.dataset.value) {
-          // Play confirmation sound
-          const audio = new Audio('/lib/sounds/ping_confirmation.mp3');
-          audio.play();
+      const button: HTMLElement | null = document.getElementById(`${color}-button`);
 
-          // animate button
-          button.classList.add('panel-button--animated');
-          this.#userPattern.push(color);
-
-          window.setTimeout(() => {
-            button.classList.remove('panel-button--animated');
-          }, this.#currentTimeout / 2);
-
-          // *** *** ***
-          // Validate user entry
-          const isCorrect = this.#compareLastIndex();
-
-          if (isCorrect && this.#gamePattern.length === this.#userPattern.length) {
-            // Clear previous time limit
-            if (this.#currentTimeover !== -1) window.clearTimeout(this.#currentTimeover);
-
-            // Continue to the next level
-            const audio = new Audio('/lib/sounds/next_level.mp3');
+      if (button) {
+        if (this.#isUserTurn && this.#gamePattern.length !== this.#userPattern.length) {
+          if (button.dataset.value) {
+            // Play confirmation sound
+            const audio = new Audio('/lib/sounds/ping_confirmation.mp3');
             audio.play();
 
-            // Reset game array
-            this.#gamePattern = [];
-            this.#userPattern = [];
+            // animate button
+            button.classList.add('panel-button--animated');
+            this.#userPattern.push(color);
 
             window.setTimeout(() => {
-              this.#currentLevel++;
-              this.#generateNewLevel();
-            }, 1000);
-          } else if (!isCorrect) {
-            // End level
-            const audio = new Audio('/lib/sounds/wrong answer.mp3');
-            audio.play();
+              button.classList.remove('panel-button--animated');
+            }, this.#currentTimeout / 2);
 
-            this.#endGame();
+            // *** *** ***
+            // Validate user entry
+            const isCorrect = this.#compareLastIndex();
+
+            if (isCorrect && this.#gamePattern.length === this.#userPattern.length) {
+              // Clear previous time limit
+              if (this.#currentTimeover !== -1) window.clearTimeout(this.#currentTimeover);
+
+              // Continue to the next level
+              const audio = new Audio('/lib/sounds/next_level.mp3');
+              audio.play();
+
+              // Reset game array
+              this.#gamePattern = [];
+              this.#userPattern = [];
+
+              window.setTimeout(() => {
+                this.#currentLevel++;
+                this.#generateNewLevel();
+              }, 1000);
+            } else if (!isCorrect) {
+              // End level
+              const audio = new Audio('/lib/sounds/wrong answer.mp3');
+              audio.play();
+
+              this.#endGame();
+            }
           }
         }
       }
