@@ -50,6 +50,8 @@ class Controller {
 
     // Loose handler
     this.#endGame = async (): Promise<void> => {
+      // Remove current timeout as needed
+      if(this.#currentTimeover !== -1) window.clearTimeout(this.#currentTimeover);
       // Show username dialog as needed
       const scores: Array<Iscore> = await this.Model.getCurrentScores();
       const minScore: number = scores[scores.length - 1].score;

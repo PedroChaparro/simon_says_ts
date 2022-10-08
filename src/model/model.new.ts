@@ -13,7 +13,7 @@ class Model {
     };
 
     this.saveNewScore = async (score: Iscore): Promise<void> => {
-      const call = await fetch('http;//localhost:3030/score', {
+      const call = await fetch('http://localhost:3030/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
